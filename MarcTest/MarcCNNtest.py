@@ -8,8 +8,6 @@ from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input
 from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
-
-
 # Load Data
 Bands = sio.loadmat('../ML_Data/Bands.mat')
 Signals = sio.loadmat('../ML_Data/Signals.mat')
