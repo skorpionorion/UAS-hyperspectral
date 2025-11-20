@@ -52,16 +52,35 @@ cnn_model.summary()
 
 ## Train the model
 batch_size = 8
-epochs = 200
-
+epochs = 100
 cnn_model.compile(optimizer=Adam(1e-3), loss='mse', metrics=['mae'])
 hist = cnn_model.fit(X_train_cnn, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=1)
 
-# Evaluate CNN Model
+# Predict on training set
+y_train_pred = cnn_model.predict(X_train_cnn)
+
+# Evaluate CNN Model (testing set)
 y_pred_cnn= cnn_model.predict(X_test_cnn)
+
+# MSE and Mean Absolute Error on training
+print("\n1D CNN Model Performance")
+print("Train Results")
+mae_train = mean_absolute_error(y_train, y_train_pred)
+mse_train = mean_squared_error(y_train, y_train_pred)
+
+## RMSE and R2 score
+rmse_train_cnn = np.sqrt(mse_train)
+r2_train = r2_score(y_train, y_train_pred)
+
+# Results
+print("Train R2 Score:", r2_train)
+print("Train MSE:", mse_train)
+print("Train Mean Absolute Error:", mae_train)
+print("Train RMSE:", rmse_train_cnn)
 
 # MSE and Mean Absolute Error
 print("\n1D CNN Model Performance")
+print("Test Results")
 mae_cnn = mean_absolute_error(y_test, y_pred_cnn)
 mse_cnn = mean_squared_error(y_test, y_pred_cnn)
 
@@ -73,7 +92,7 @@ r2_test = r2_score(y_test, y_pred_cnn)
 print("Test R2 Score:", r2_test)
 print("Test MSE:", mse_cnn)
 print("Test Mean Absolute Error:", mae_cnn)
-print("RMSE:", rmse_cnn)
+print("Test RMSE:", rmse_cnn)
 # Plot training & validation MAE values
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
