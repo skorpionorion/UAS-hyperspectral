@@ -39,6 +39,11 @@ print("Testing R^2:", r2_test)
 print("Training MSE:", mse_train)
 print("Testing MSE:", mse_test)
 
+rmse_train = np.sqrt(mse_train)
+rmse_test = np.sqrt(mse_test)
+print("Train RMSE: ",rmse_train)
+print("Test RMSE: ",rmse_test)
+
 #Plotting Results
 plt.figure(figsize=(10, 6))
 plt.plot(Y_test, 'o-', label='Actual Moisture', markersize=6)
