@@ -3,9 +3,8 @@ import scipy.io as sio
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input
-from tensorflow.keras.optimizers import Adam
+import keras
+from keras import layers
 import matplotlib.pyplot as plt
 
 # Load Data
@@ -22,7 +21,7 @@ x_scaler = StandardScaler()
 X_scaled = x_scaler.fit_transform(X)
 
 #Split into training and testing sets (70/30)
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
 
 print(X_train.shape)
 print(y_train.shape)
@@ -36,16 +35,17 @@ print(y_train.min())
 X_train_cnn = X_train[..., np.newaxis]
 X_test_cnn = X_test[..., np.newaxis]
 
-cnn_model = Sequential([
-    Conv1D(64, 3, activation='relu', input_shape=(X_train_cnn.shape[1], 1)), # Conv1D layer
-    Conv1D(32, 3, activation='relu'),
-    Dropout(0.1), # add dropout after the first convolutional layer
-    Conv1D(16, 3, activation='relu'),
-    Flatten(), # flattne the output
-    Dense(128, activation='relu'), # Dense layer
-    Dense(64, activation='relu'),
-    Dropout(0.1), # add dropout after the dense layer
-    Dense(1, activation='linear')
+cnn_model = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', padding='valid', input_shape=(X_train_cnn.shape[1], 1)), # Conv1D layer
+    layers.Conv1D(32, 3, activation='relu', padding='valid'),
+    layers.Dropout(0.1), # add dropout after the first convolutional layer
+    layers.Conv1D(16, 3, activation='relu', padding='valid'),
+    layers.MaxPooling1D(pool_size=2, strides=1, padding='valid'),
+    layers.Flatten(), # flatten the output
+    layers.Dense(128, activation='relu'), # Dense layer
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.1), # add dropout after the dense layer
+    layers.Dense(1, activation='linear')
 ])
 
 cnn_model.summary()
@@ -53,8 +53,8 @@ cnn_model.summary()
 ## Train the model
 batch_size = 8
 epochs = 100
-cnn_model.compile(optimizer=Adam(1e-3), loss='mse', metrics=['mae'])
-hist = cnn_model.fit(X_train_cnn, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=1)
+cnn_model.compile(optimizer="adam", loss='mse', metrics=['mae'])
+hist = cnn_model.fit(X_train_cnn, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=1)
 
 # Predict on training set
 y_train_pred = cnn_model.predict(X_train_cnn)
